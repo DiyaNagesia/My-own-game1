@@ -2,6 +2,8 @@ var shark,rock1,rock2,rock3;
 var sharkR,sharkL,sharkU,sharkD;
 var sea;
 var gDot,sFood,mFood,lFood;
+var won,lost;
+var gameState = "play";
 var score = 0
 
 function preload(){
@@ -27,6 +29,7 @@ function setup(){
 	shark.debug = false
 	shark.setCollider("rectangle",0,0,100,300)
 
+
 	dotGroup = new Group()
 	sFGroup = new Group()
 	mFGroup = new Group()
@@ -36,13 +39,13 @@ function setup(){
 	obstacle3Group = new Group()
 
 }
-function draw(){
+function draw(){ 
 	background(sea)
     textSize(20)
 	fill ("red")
     text("score : "+score,50,50)
 
-
+	if(gameState === "play"){
 
 	if(keyDown(UP_ARROW)){
 		shark.addImage(sharkU)
@@ -66,27 +69,23 @@ function draw(){
 		shark.velocityY = 0
 	}
 
-	if(score == -1){
-      background(0)
-	  text ("GAME OVER")
-	  }
+
 	
 
-
       spawnObstacles()
-	  for (var d = 0; d < obstacle1Group.length; d++) {
+	 for (var d = 0; d < obstacle1Group.length; d++) {
 		if (obstacle1Group.get(d).isTouching(shark)) {
-			score = -1
+			score = 0
 		}
 	}
 	for (var e = 0; e < obstacle2Group.length; e++) {
-		if (obstacle2Group.get(e).isTouching(shark)) {
-		score = -1
+	if (obstacle2Group.get(e).isTouching(shark)) {
+		score = 0
 		}
 	}
 	for (var f = 0; f < obstacle3Group.length; f++) {
 		if (obstacle3Group.get(f).isTouching(shark)) {
-			score = -1
+			score = 0
 		}
 	}
 
@@ -94,34 +93,61 @@ function draw(){
 for (var i = 0; i < lFGroup.length; i++) {
 			if (lFGroup.get(i).isTouching(shark)) {
 				lFGroup.get(i).destroy();
-				score++
+				score = score+1
 			}
 		}
 			spawnFood()
 	for (var a = 0; a < sFGroup.length; a++) {
 		if (sFGroup.get(a).isTouching(shark)) {
 			sFGroup.get(a).destroy();
-			score++
+			score = score+1
 		}
 	}
 	for (var b = 0; b < mFGroup.length; b++) {
 		if (mFGroup.get(b).isTouching(shark)) {
 			mFGroup.get(b).destroy();
-			score++
+			score = score+1
 		}	
 	}
 	for (var c = 0; c < dotGroup.length; c++) {
 		if (dotGroup.get(c).isTouching(shark)) {
 			dotGroup.get(c).destroy();
-			score++
+			score = score+1
 		}
 	}
-		
+
+	if(score>20){
+		gameState = "won"
+        textSize(150)
+  fill("blue")
+  text("You Won 😃",windowWidth/4,windowHeight/2)
+  score = 20
+  dotGroup.destroyEach();
+  sFGroup.destroyEach();
+  mFGroup.destroyEach();
+  lFGroup.destroyEach();
+  obstacle1Group.destroyEach();
+  obstacle2Group.destroyEach();
+  obstacle3Group.destroy();
+  shark.destroy();
+  score.destroy();
+	  }
+	  
+	   if(gameState === "lost"){
+
+		   if(shark.isTouching(obstacle1Group)){
+		   }
+		   if(shark.isTouching(obstacle2Group)){
+		   }
+		   if(shark.isTouching(obstacle3Group)){
+		}
+	   }
+	}
 	drawSprites()
-}
+
 
 function spawnDot(){
-	if(frameCount % 25 === 0){
+	if(frameCount % 20 === 0){
 		var dot = createSprite(windowWidth,Math.round(random(20,windowHeight-60)))
 		 
 	dot.addImage(gDot)
@@ -133,7 +159,7 @@ function spawnDot(){
 }
 
 function spawnFood(){
-	if(frameCount % 45 === 0){
+	if(frameCount % 50 === 0){
 		var sF = createSprite(windowWidth,Math.round(random(20,windowHeight-60)))
 		var mF = createSprite(windowWidth,Math.round(random(20,windowHeight-60)))
 		var lF = createSprite(windowWidth,Math.round(random(20,windowHeight-60)))
@@ -159,22 +185,22 @@ function spawnFood(){
 function spawnObstacles(){
 	if(frameCount % 150 === 0){
       var obstacle1 = createSprite(windowWidth,Math.round(random(10,windowHeight-60)))
-	   var obstacle2 = createSprite(windowWidth,Math.round(random(10,windowHeight-60)))
+   var obstacle2 = createSprite(windowWidth,Math.round(random(10,windowHeight-60)))
       var obstacle3 = createSprite(windowWidth,Math.round(random(10,windowHeight-60)))
 
       obstacle1.addImage(rock1)
-	   obstacle1.scale = 0.7
+        obstacle1.scale = 0.7
 	   obstacle1.velocityX = -5
 
    obstacle2.addImage(rock2)
      obstacle2.scale = 0.7
-		obstacle2.velocityX = -5
+	obstacle2.velocityX = -5
 
 		obstacle3.addImage(rock3)
 		obstacle3.scale = 0.7
 		obstacle3.velocityX = -5
 	   
-        obstacle1Group.add(obstacle1)
+      obstacle1Group.add(obstacle1)
 		obstacle2Group.add(obstacle2)
        obstacle3Group.add(obstacle3)
 
@@ -182,4 +208,31 @@ function spawnObstacles(){
 
 }
 
+if(gameState == "won"){
+    textSize(100)
+  fill("yellow")
+  text("You Won ",windowWidth/2,windowHeight/2)
+  dotGroup.destroyEach();
+  sFGroup.destroyEach();
+  mFGroup.destroyEach();
+  lFGroup.destroyEach();
+  obstacle1Group.destroyEach();
+  obstacle2Group.destroyEach();
+  obstacle3Group.destroy();
+  shark.destroy();
+}
 
+else if(gameState == "lost"){
+	textSize(100)
+  fill("red")
+  text("You lost ",windowWidth/2,windowHeight/2)
+  dotGroup.destroyEach();
+  sFGroup.destroyEach();
+  mFGroup.destroyEach();
+  lFGroup.destroyEach();
+  obstacle1Group.destroyEach();
+  obstacle2Group.destroyEach();
+  obstacle3Group.destroy();
+  shark.destroy();
+}
+}
